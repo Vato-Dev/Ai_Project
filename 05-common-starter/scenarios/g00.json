@@ -1,0 +1,12 @@
+{
+  "id": "g00",
+  "title": "Generic request summary",
+  "categories": [
+    "general"
+  ],
+  "keywords": {
+    "general": []
+  },
+  "high_priority_words": [],
+  "instructions": "Summarize for a human reviewer."
+}
