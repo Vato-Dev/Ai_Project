@@ -1,0 +1,6 @@
+fastapi==0.142.2
+pydantic==2.13.5
+httpx==0.28.1
+python-dotenv==1.2.4
+streamlit==1.65.0
+uvicorn==0.54.0
