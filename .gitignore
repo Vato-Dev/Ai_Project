@@ -426,6 +426,7 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+<<<<<<< HEAD
 
 .env.local
 .venv/
@@ -443,3 +444,5 @@ infra/*.tfplan
 infra/terraform.tfvars
 !infra/terraform.tfvars.example
 
+=======
+>>>>>>> origin/main
