@@ -1,16 +1,16 @@
 {
-  "id": "g01",
-  "title": "IT Helpdesk Triage",
-  "categories": [
-    "account",
-    "network",
-    "software"
-  ],
-  "keywords": {
-    "account": ["password", "login", "active directory", "permission", "reset"],
-    "network": ["wifi", "vpn", "router", "internet", "disconnect"],
-    "software": ["ide", "editor", "crash", "installation", "bug"]
-  },
-  "high_priority_words": ["outage", "broken", "critical", "blocking"],
-  "instructions": "If the ticket complains about password resets, login link failures or active directory issues, map to 'account'. If it mentions WiFi drops, slow VPN or router timeouts, map to 'network'. If it relates to IDE installations, app crashes or text editor failures, map to 'software'. Ambiguous entries require a reviewer; do not invent external facts."
+"id": "g01",
+"title": "IT Helpdesk Triage",
+"categories": [
+"account",
+"network",
+"software"
+],
+"keywords": {
+"account": ["password", "login", "active directory", "permission", "reset", "locked out", "mfa"],
+"network": ["wifi", "vpn", "router", "internet", "disconnect", "network", "slow", "timeout"],
+"software": ["ide", "vscode", "intellij", "editor", "crash", "installation", "install", "software", "bug"]
+},
+"high_priority_words": ["outage", "broken", "critical", "blocking", "urgent"],
+"instructions": "If the ticket complains about password resets, login link failures or active directory issues, map to 'account'. If it mentions WiFi drops, slow VPN or router timeouts, map to 'network'. If it relates to IDE installations, app crashes or text editor failures, map to 'software'. Ambiguous entries require a reviewer; do not invent external facts."
 }
