@@ -25,7 +25,7 @@ logging.basicConfig(level=logging.INFO, format="%(message)s")
 def create_app(provider=None, policy=None, db_path=None):
     load_dotenv()
     provider_name = os.getenv("LLM_PROVIDER", "mock")
-    scenario_id = os.getenv("SCENARIO_ID", "g00")
+    scenario_id = os.getenv("SCENARIO_ID", "g01")
     if policy is None:
         policy = json.loads(Path(f"scenarios/{scenario_id}.json").read_text())
     if provider is None:
