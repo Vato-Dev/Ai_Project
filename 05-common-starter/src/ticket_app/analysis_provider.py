@@ -59,18 +59,38 @@ class LocalAnalysisProvider:
             "model": self.model,
             "messages": [
                 {"role": "system", "content": system_instruction},
-                {"role": "user", "content": user_content}
+                {"role": "user", "content": user_content},
             ],
             "temperature": 0.0,
-            "response_format": {"type": "json_object"}
+            "max_tokens": 300,
+            "response_format": {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "ticket_triage",
+                    "strict": True,
+                    "schema": {
+                        "type": "object",
+                        "properties": {
+                            "summary": {"type": "string"},
+                            "category": {"type": "string", "enum": list(allowed_categories)},
+                            "priority": {"type": "string", "enum": ["low", "medium", "high"]},
+                            "next_action": {"type": "string"},
+                        },
+                        "required": ["summary", "category", "priority", "next_action"],
+                        "additionalProperties": False,
+                    },
+                },
+            },
         }
 
         with httpx.Client(transport=self.transport, timeout=self.timeout) as client:
             try:
                 response = client.post(url, json=payload, headers=headers)
                 response.raise_for_status()
-            except (httpx.ConnectError, httpx.TimeoutException, httpx.HTTPStatusError) as exc:
-                raise ProviderUnavailable("Inference server is unavailable or timed out") from exc
+            except httpx.HTTPStatusError as exc:
+                raise ProviderUnavailable(f"Inference server returned HTTP {exc.response.status_code}") from exc
+            except httpx.HTTPError as exc:
+                raise ProviderUnavailable(f"Inference server unreachable: {type(exc).__name__}") from exc
 
         try:
             response_json = response.json()
