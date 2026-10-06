@@ -1,9 +1,61 @@
 pipeline {
   agent { label 'ai-lab' }
+  triggers { pollSCM('H/2 * * * *') }
+  options { timestamps(); timeout(time: 20, unit: 'MINUTES') }
+  environment {
+    IMAGE_REPO   = 'g01-helpdesk-triage'
+    LLM_PROVIDER = 'mock'
+  }
+
   stages {
     stage('Checkout') { steps { checkout scm } }
-    stage('Student pipeline') {
-      steps { error('Add install, automated tests, reporting, IaC validation, image build and smoke test stages') }
+
+    stage('Install') {
+      steps {
+        sh 'python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements-dev.txt && pip install -e .'
+      }
+    }
+
+    stage('Test') {
+      steps {
+        sh 'mkdir -p reports && . .venv/bin/activate && pytest -q --junitxml=reports/junit.xml'
+      }
+      post { always { junit testResults: 'reports/junit.xml', allowEmptyResults: true } }
+    }
+
+    stage('Terraform validate') {
+      steps {
+        sh 'cd infra && terraform init -backend=false -input=false && terraform validate'
+      }
+    }
+
+    stage('Build image') {
+      steps {
+        script { env.IMAGE_TAG = "${IMAGE_REPO}:${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}" }
+        sh 'docker build -t $IMAGE_TAG .'
+        sh 'echo $IMAGE_TAG > reports/image_tag.txt'
+      }
+    }
+
+    stage('Smoke test') {
+      steps {
+        sh '''
+          docker rm -f smoke-$BUILD_NUMBER 2>/dev/null || true
+          docker run -d --name smoke-$BUILD_NUMBER -e LLM_PROVIDER=mock $IMAGE_TAG
+          for i in $(seq 1 15); do
+            docker exec smoke-$BUILD_NUMBER python -c "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health').status==200 else 1)" && exit 0
+            sleep 2
+          done
+          docker logs smoke-$BUILD_NUMBER; exit 1
+        '''
+      }
+    }
+  }
+
+  post {
+    always {
+      sh 'docker rm -f smoke-$BUILD_NUMBER 2>/dev/null || true'
+      archiveArtifacts artifacts: 'reports/**', allowEmptyArchive: true
     }
   }
 }
