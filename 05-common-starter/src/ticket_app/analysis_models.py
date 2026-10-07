@@ -36,4 +36,5 @@ class Record(BaseModel):
     scenario: str
     provider: str
     analysis: Analysis
-    requires_review: bool = True
+    # Literal[True]: a human review is always required, never model-dependent.
+    requires_review: Literal[True] = True
