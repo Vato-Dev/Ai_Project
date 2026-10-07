@@ -14,3 +14,8 @@ infra/*.tfstate*
 infra/*.tfplan
 infra/terraform.tfvars
 !infra/terraform.tfvars.example
+.terraform/
+*.tfstate*
+infra/terraform.tfvars
+reports/
+data/*.db

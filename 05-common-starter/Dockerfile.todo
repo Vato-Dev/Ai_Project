@@ -1,4 +1,0 @@
-# Create Dockerfile in Phase 7.
-# Requirements: Python runtime, pinned dependencies, application package,
-# scenario policy and UI files, unprivileged user, writable /data,
-# API startup command that listens on 0.0.0.0:8000.
